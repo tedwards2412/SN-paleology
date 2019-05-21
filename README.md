@@ -2,7 +2,7 @@
 
 *Is it possible find neutrinos from galactic core collapse SN with a paleo-detector?*
 
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)[![DOI](https://zenodo.org/badge/187173551.svg)](https://zenodo.org/badge/latestdoi/187173551)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![DOI](https://zenodo.org/badge/187173551.svg)](https://zenodo.org/badge/latestdoi/187173551)
 
 Code for calculating track length spectra in paleo-detectors and exploring paleo-detector sensitivity to SN neutrinos. This code can be used to reproduce the results of [arXiv:1905.XXXX](http://arxiv.org/abs/1905.XXXX), "*Galactic Supernova Paleology*".
 
