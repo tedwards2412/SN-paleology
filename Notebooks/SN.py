@@ -16,6 +16,9 @@ import os
 R_E = 8.12 # kpc - Table A1 in 1807.09409 
 # R_E = 8.7 # kpc - FIXME: Should this be changed?
 
+
+f_Earth = None #Heliocentric PDF for SN distances
+
 # Fermi-Dirac spectrum
 def dNdE(E, Etot, T, alpha):
     numer = Etot*((1+alpha)**(1+alpha))*(E**alpha)*np.exp(-(1+alpha)*E/T)
@@ -33,43 +36,55 @@ def inverse_transform_sampling(function, x_range, nbins=100, n_samples=1000):
     return inv_cdf(r)
 
 def calc_f():
-    R_gal = 50
-    N_SN = int(1e5)
+    global f_Earth
     
-    def calc_dist(x, y, z):
-        x_E = R_E
-        y_E = 0.0
-        z_E = 0.0
-        return np.sqrt((x-x_E)**2+(y-y_E)**2+(z-z_E)**2)
-    
-    phi = np.random.uniform(0,2*np.pi, size=N_SN)
-    z = np.random.exponential(scale=0.33, size=N_SN)
-    
-    l_c = 2.5 #kpc
-    r_B = 2.0 #kpc
-    sigma_0 = 611e6 #Msun/kpc^2
-
-    def sigma_disc(r):
-        #return r*sigma_0*l_c*((r-r_B)**2 + l_c**2)**-0.5
-        r_d = 2.9 #kpc
-        return r*np.exp(-r/r_d)
-
-    x_temp = np.linspace(0,R_gal,num=100)
-    r = inverse_transform_sampling(sigma_disc, x_temp, nbins=100, n_samples=N_SN)
-    
-    theta = np.pi/2.
-    x = r * np.sin(theta) * np.cos(phi)
-    y = r * np.sin(theta) * np.sin(phi)
-    
-    for i in tqdm(range(N_SN)):
-        R = calc_dist(x, y, z)
+    if (f_Earth is None):
         
-    b_edge = np.linspace(0,R_gal,100)
-    b_c = b_edge[:-1] + np.diff(b_edge)/2
-    dist_bin = np.histogram(R, bins=b_edge, normed=True)
+        R_gal = 50
+        N_SN = int(1e5)
+
+        def calc_dist(x, y, z):
+            x_E = R_E
+            y_E = 0.0
+            z_E = 0.0
+            return np.sqrt((x-x_E)**2+(y-y_E)**2+(z-z_E)**2)
+
+        phi = np.random.uniform(0,2*np.pi, size=N_SN)
+        z = np.random.exponential(scale=0.33, size=N_SN)
+
+        l_c = 2.5 #kpc
+        r_B = 2.0 #kpc
+        sigma_0 = 611e6 #Msun/kpc^2
+
+        def sigma_disc(r):
+            #return r*sigma_0*l_c*((r-r_B)**2 + l_c**2)**-0.5
+            r_d = 2.9 #kpc
+            return r*np.exp(-r/r_d)
+
+        x_temp = np.linspace(0,R_gal,num=100)
+        r = inverse_transform_sampling(sigma_disc, x_temp, nbins=100, n_samples=N_SN)
+
+        theta = np.pi/2.
+        x = r * np.sin(theta) * np.cos(phi)
+        y = r * np.sin(theta) * np.sin(phi)
+
+        for i in tqdm(range(N_SN)):
+            R = calc_dist(x, y, z)
+
+        b_edge = np.linspace(0,R_gal,100)
+        b_c = b_edge[:-1] + np.diff(b_edge)/2
+        dist_bin = np.histogram(R, bins=b_edge, normed=True)
+
+        f_Earth = interpolate.interp1d(b_c, dist_bin[0], bounds_error=False, fill_value=(0.0,0.0))
+        
+        xlist = np.linspace(0, 50, 100)
+        plt.figure()
+        plt.plot(xlist, f_Earth(xlist))
+        plt.xlabel(r"Helio-centric distance $D$ [kpc]")
+        plt.ylabel(r"$P(D)$ [kpc$^{-1}$]")
+        plt.show()
     
-    f = interpolate.interp1d(b_c, dist_bin[0], bounds_error=False, fill_value=(0.0,0.0))
-    return f
+    return f_Earth
 
 def galactic_SN(E):
     T_v = np.array([13.3e3,14.6e3,15.0e3,15.0e3,15.0e3,15.0e3]) # keV
@@ -77,13 +92,7 @@ def galactic_SN(E):
     alpha = np.array([3., 3.3, 3., 3., 3., 3.])
     Etot *= 6.242e+8 # ergs to keV
     F = calc_f()
-    
-    xlist = np.linspace(0, 50, 100)
-    plt.figure()
-    plt.plot(xlist, F(xlist))
-    plt.xlabel(r"Helio-centric distance $D$ [kpc]")
-    plt.ylabel(r"$P(D)$ [kpc$^{-1}$]")
-    plt.show()
+
     
     dist_weight = lambda R: F(R)/4/np.pi/((R)**2.) 
     dndE = np.zeros_like(E)
