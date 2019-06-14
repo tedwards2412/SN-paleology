@@ -4,7 +4,7 @@
 
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![DOI](https://zenodo.org/badge/187173551.svg)](https://zenodo.org/badge/latestdoi/187173551)
 
-Code for calculating track length spectra in paleo-detectors and exploring paleo-detector sensitivity to SN neutrinos. This code can be used to reproduce the results of [arXiv:1905.XXXX](http://arxiv.org/abs/1905.XXXX), "*Galactic Supernova Paleology*".
+Code for calculating track length spectra in paleo-detectors and exploring paleo-detector sensitivity to SN neutrinos. This code can be used to reproduce the results of [arXiv:1906.1906.05800](http://arxiv.org/abs/1906.1906.05800), "*Paleo-Detectors for Galactic Supernova Neutrinos*".
 
 More information about paleo-detectors can also be found in [arXiv:1811.10549](http://arxiv.org/abs/1811.10549), [arXiv:1806.05991](http://arxiv.org/abs/1806.05991), and [arXiv:1811.06844](http://arxiv.org/abs/1811.06844).
 
